@@ -1,0 +1,12 @@
+{application, handyman,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { handyman_app, []}},
+  {env, []}
+ ]}.
