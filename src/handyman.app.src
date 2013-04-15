@@ -2,7 +2,7 @@
  [
   {description, "Utilities functions used by Materials Commons"},
   {vsn, "0.1.0"},
-  {modules, [handyman]},
+  {modules, [checksums, handyconfig, handynet, handqueue]},
   %{registered, []},
   {applications, [kernel, stdlib]},
   %{mod, { handyman_app, []}},
