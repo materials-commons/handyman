@@ -17,12 +17,12 @@ addr_tuple_to_string({Interface, Values}) ->
     {addr, {Oct1, Oct2, Oct3, Oct4}} = lists:keyfind(addr, 1, Values),
     {Interface, lists:flatten(io_lib:format("~b.~b.~b.~b", [Oct1, Oct2, Oct3, Oct4]))}.
 
-get_address([], Interface) ->
+get_address([], _Interface) ->
     {error, no_interfaces};
 get_address(Interfaces, InterfaceIndex) when is_integer(InterfaceIndex) ->
     {_InterfaceName, Address} = lists:nth(InterfaceIndex, Interfaces),
     {ok, Address};
 get_address(Interfaces, InterfaceName) ->
     {_IName, Address} = lists:keyfind(InterfaceName, 1, Interfaces),
-    {ok, Adddress}.
+    {ok, Address}.
 
