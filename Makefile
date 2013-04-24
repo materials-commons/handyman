@@ -4,7 +4,7 @@ COMBO_PLT = $(HOME)/.handyman_combo_dialyzer_plt
 
 .PHONY: deps test rel
 
-all: deps compile
+all: deps compile test
 
 compile:
 	./rebar compile
