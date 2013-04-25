@@ -6,19 +6,18 @@ get_external_addrs() ->
     {ok, Interfaces} = inet:getifaddrs(),
     InterfacesAndV4Addrs = get_if_v4_addrs(Interfaces),
     NonLocalAddresses = lists:filter(fun is_external_addr/1, InterfacesAndV4Addrs),
-    io:format("NonLocalAddresses ~p~n", [NonLocalAddresses]),
     lists:map(fun addr_tuple_to_string/1, NonLocalAddresses).
 
 get_if_v4_addrs(Interfaces) ->
     lists:map(
         fun({Interface, Values}) ->
-                Addrs = lists:filter(
-                    fun({Key, Value}) ->
-                            Key =:= addr andalso is_tuple(Value) 
-                                andalso tuple_size(Value) =:= 4
-                     end, Values),
-                 {Interface, Addrs}
+                Addrs = lists:filter(fun is_v4_address/1, Values),
+               {Interface, Addrs}
          end, Interfaces).
+
+ is_v4_address({Key, Value}) ->
+    Key =:= addr andalso is_tuple(Value) 
+        andalso tuple_size(Value) =:= 4.
 
 is_external_addr({_IName, Values}) ->
     case lists:keyfind(addr, 1, Values) of
