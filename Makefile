@@ -26,7 +26,7 @@ clean: distclean
 distclean:
 	./rebar delete-deps
 
-test: all
+test: deps compile
 	./rebar skip_deps=true eunit
 
 docs: deps
