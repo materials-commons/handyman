@@ -1,10 +1,11 @@
 {application, handyman,
  [
   {description, "Utilities functions used by Materials Commons"},
-  {vsn, "0.1.0"},
+  {vsn, "0.2.0"},
   {modules, 
     [
         checksums, 
+        handytcp,
         handyconfig, 
         handyfile, 
         handynet, 
