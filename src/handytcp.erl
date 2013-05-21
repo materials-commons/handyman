@@ -23,9 +23,9 @@
 -export([ssl_recv_all/2, ssl_recv_rest/3]).
 
 ssl_recv_all(Socket, {active, true}) ->
-    inet:setopts(Socket, [{active, false}]),
+    ssl:setopts(Socket, [{active, false}]),
     AllData = ssl_recv_all(Socket),
-    inet:setopts(Socket, [{active, true}]),
+    ssl:setopts(Socket, [{active, true}]),
     AllData;
 ssl_recv_all(Socket, {active, false}) ->
     ssl_recv_all(Socket).
@@ -35,9 +35,9 @@ ssl_recv_all(Socket) ->
     ssl_recv_rest(Socket, Data).
 
 ssl_recv_rest(Socket, Data, {active, true}) ->
-    inet:setopts(Socket, [{active, false}]),
+    ssl:setopts(Socket, [{active, false}]),
     AllData = ssl_recv_rest(Socket, Data),
-    inet:setopts(Socket, [{active, true}]),
+    ssl:setopts(Socket, [{active, true}]),
     AllData;
 ssl_recv_rest(Socket, Data, {active, false}) ->
     ssl_recv_rest(Socket, Data).
