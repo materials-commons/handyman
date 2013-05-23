@@ -20,7 +20,18 @@
 %%% ===================================================================
 
 -module(handyuser).
--export([username/0]).
+-export([user_home/1, username/0]).
+
+user_home(Username) -> user_home(Username, os:type()).
+
+user_home(Username, {unix, _Os}) ->
+    Cmd = "cd ~" ++ Username ++ "; pwd",
+    Dir = binary_to_list(handystring:trim_trailing(os:cmd(Cmd), "\n")),
+    case string:str(Dir, "cd:") of
+        0 -> Dir;
+        _ -> false %% Command failed
+    end;
+user_home(_Username, {win32, _Os}) -> throw(notimplemented).
 
 username() -> username(os:type()).
 
