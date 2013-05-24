@@ -26,14 +26,8 @@ static ERL_NIF_TERM realpath_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM ar
         return enif_make_badarg(env);
     }
 
-    if (! realpath(dir, resolvedname))
-    {
-        return ATOM_BADPATH;
-    }
-    else
-    {
-        return enif_make_string(env, resolvedname, ERL_NIF_LATIN1);
-    }
+    return realpath(dir, resolvedname) ?
+                enif_make_string(env, resolvedname, ERL_NIF_LATIN1) : ATOM_BADPATH;
 }
 
 static ERL_NIF_TERM user_home_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
@@ -41,6 +35,7 @@ static ERL_NIF_TERM user_home_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM a
     char buf[BUF_SIZE];
     char username[32];
     struct passwd pw, *pwp;
+    int found = 0;
 
     if (argc != 1)
     {
@@ -53,6 +48,7 @@ static ERL_NIF_TERM user_home_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM a
     }
 
     setpwent();
+
     while(1)
     {
         if (getpwent_r(&pw, buf, BUF_SIZE, &pwp))
@@ -62,17 +58,15 @@ static ERL_NIF_TERM user_home_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM a
 
         if (STREQL(username, pwp->pw_name))
         {
-            /* Found match */
-            endpwent();
-            return enif_make_string(env, pwp->pw_dir, ERL_NIF_LATIN1);
+            found = 1;
+            break;
         }
     }
 
-    /*
-    ** If we get here no match was found.
-    */
     endpwent();
-    return ATOM_BADUSER;
+
+    return found ?
+        enif_make_string(env, pwp->pw_dir, ERL_NIF_LATIN1) : ATOM_BADUSER;
 }
 
 static int on_load(ErlNifEnv *env, void **priv, ERL_NIF_TERM load_info)
