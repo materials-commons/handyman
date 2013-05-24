@@ -6,4 +6,5 @@ deps
 *.swp
 rel/handyman
 ebin
+priv
 

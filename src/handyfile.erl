@@ -20,7 +20,9 @@
 %%% ===================================================================
 
 -module(handyfile).
--export([file_exists/1]).
+-export([file_exists/1, is_symlink/1, realpath/1]).
+
+-include_lib("kernel/include/file.hrl").
 
 %% @doc Check if file exists (is readable).
 -spec file_exists(string()) -> boolean().
@@ -30,3 +32,15 @@ file_exists(Filepath) ->
         {error, enoent} -> false;
         _ -> false
     end.
+
+-spec is_symlink(string()) -> boolean().
+is_symlink(FilePath) ->
+    case file:read_link_info(FilePath) of
+        {ok, #file_info{type = symlink}} -> true;
+        _ -> false
+    end.
+
+-spec realpath(string()) -> string() | badpath.
+realpath(FilePath) ->
+    handyman_nifs:realpath_nif(FilePath).
+
