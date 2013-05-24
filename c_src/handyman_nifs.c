@@ -9,6 +9,8 @@
 static ERL_NIF_TERM ATOM_BADPATH;
 static ERL_NIF_TERM ATOM_BADUSER;
 
+static char *user_home(char *username);
+
 #define STREQL(a,b) (strcmp(a,b) == 0)
 
 static ERL_NIF_TERM realpath_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
@@ -16,12 +18,7 @@ static ERL_NIF_TERM realpath_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM ar
     char dir[BUF_SIZE];
     char resolvedname[BUF_SIZE];
 
-    if (argc != 1)
-    {
-        return enif_make_badarg(env);
-    }
-
-    if (! enif_get_string(env, argv[0], dir, BUF_SIZE, ERL_NIF_LATIN1))
+    if (argc != 1 || ! enif_get_string(env, argv[0], dir, BUF_SIZE, ERL_NIF_LATIN1))
     {
         return enif_make_badarg(env);
     }
@@ -32,30 +29,28 @@ static ERL_NIF_TERM realpath_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM ar
 
 static ERL_NIF_TERM user_home_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
-    char buf[BUF_SIZE];
     char username[32];
+    char *dir;
+
+    if (argc != 1 || ! enif_get_string(env, argv[0], username, 32, ERL_NIF_LATIN1))
+    {
+        return enif_make_badarg(env);
+    }
+
+    return (dir = user_home(username)) ?
+            enif_make_string(env, dir, ERL_NIF_LATIN1) : ATOM_BADUSER;
+}
+
+static char *user_home(char *username)
+{
+    char buf[BUF_SIZE];
     struct passwd pw, *pwp;
     int found = 0;
 
-    if (argc != 1)
-    {
-        return enif_make_badarg(env);
-    }
-
-    if (! enif_get_string(env, argv[0], username, 32, ERL_NIF_LATIN1))
-    {
-        return enif_make_badarg(env);
-    }
-
     setpwent();
 
-    while(1)
+    while(getpwent_r(&pw, buf, BUF_SIZE, &pwp) == 0)
     {
-        if (getpwent_r(&pw, buf, BUF_SIZE, &pwp))
-        {
-            break;
-        }
-
         if (STREQL(username, pwp->pw_name))
         {
             found = 1;
@@ -65,8 +60,7 @@ static ERL_NIF_TERM user_home_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM a
 
     endpwent();
 
-    return found ?
-        enif_make_string(env, pwp->pw_dir, ERL_NIF_LATIN1) : ATOM_BADUSER;
+    return found ? pwp->pw_dir : NULL;
 }
 
 static int on_load(ErlNifEnv *env, void **priv, ERL_NIF_TERM load_info)
