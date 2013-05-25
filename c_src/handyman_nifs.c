@@ -8,10 +8,16 @@
 
 static ERL_NIF_TERM ATOM_BADPATH;
 static ERL_NIF_TERM ATOM_BADUSER;
+static ERL_NIF_TERM ATOM_OK;
+static ERL_NIF_TERM ATOM_ERROR;
 
 static char *user_home(char *username);
+static struct passwd *getpwentry();
 
 #define STREQL(a,b) (strcmp(a,b) == 0)
+#define MAKE_SUCCESS_TUPLE(env, Item) enif_make_tuple2(env, ATOM_OK, Item)
+#define MAKE_SUCCESS_TUPLE_STR(env, str) MAKE_SUCCESS_TUPLE(env, enif_make_string(env, str, ERL_NIF_LATIN1))
+#define MAKE_ERROR_TUPLE(env, Item) enif_make_tuple2(env, ATOM_ERROR, Item)
 
 static ERL_NIF_TERM realpath_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
@@ -24,7 +30,8 @@ static ERL_NIF_TERM realpath_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM ar
     }
 
     return realpath(dir, resolvedname) ?
-                enif_make_string(env, resolvedname, ERL_NIF_LATIN1) : ATOM_BADPATH;
+            MAKE_SUCCESS_TUPLE_STR(env, resolvedname) : MAKE_ERROR_TUPLE(env, ATOM_BADPATH);
+                /*enif_make_string(env, resolvedname, ERL_NIF_LATIN1) : ATOM_BADPATH;*/
 }
 
 static ERL_NIF_TERM user_home_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
@@ -38,20 +45,20 @@ static ERL_NIF_TERM user_home_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM a
     }
 
     return (dir = user_home(username)) ?
-            enif_make_string(env, dir, ERL_NIF_LATIN1) : ATOM_BADUSER;
+            MAKE_SUCCESS_TUPLE_STR(env, dir) : MAKE_ERROR_TUPLE(env, ATOM_BADUSER);
+            /*enif_make_string(env, dir, ERL_NIF_LATIN1) : ATOM_BADUSER;*/
 }
 
 static char *user_home(char *username)
 {
-    char buf[BUF_SIZE];
-    struct passwd pw, *pwp;
+    struct passwd *pw;
     int found = 0;
 
     setpwent();
 
-    while(getpwent_r(&pw, buf, BUF_SIZE, &pwp) == 0)
+    while((pw = getpwentry()) != NULL)
     {
-        if (STREQL(username, pwp->pw_name))
+        if (STREQL(username, pw->pw_name))
         {
             found = 1;
             break;
@@ -60,13 +67,34 @@ static char *user_home(char *username)
 
     endpwent();
 
-    return found ? pwp->pw_dir : NULL;
+    return found ? pw->pw_dir : NULL;
+}
+
+static struct passwd *getpwentry()
+{
+#ifdef __MACH__
+    return getpwent();
+#elif __linux__
+    char buf[BUF_SIZE];
+    struct passwd pw, *pwp;
+
+    if (getpwent_r(&pw, buf, BUF_SIZE, &pwp) == 0)
+    {
+        return pwp;
+    }
+    else
+    {
+        return NULL;
+    }
+#endif
 }
 
 static int on_load(ErlNifEnv *env, void **priv, ERL_NIF_TERM load_info)
 {
     ATOM_BADPATH = enif_make_atom(env, "badpath");
     ATOM_BADUSER = enif_make_atom(env, "baduser");
+    ATOM_OK = enif_make_atom(env, "ok");
+    ATOM_ERROR = enif_make_atom(env, "error");
     return 0;
 }
 
