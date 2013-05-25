@@ -31,7 +31,6 @@ static ERL_NIF_TERM realpath_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM ar
 
     return realpath(dir, resolvedname) ?
             MAKE_SUCCESS_TUPLE_STR(env, resolvedname) : MAKE_ERROR_TUPLE(env, ATOM_BADPATH);
-                /*enif_make_string(env, resolvedname, ERL_NIF_LATIN1) : ATOM_BADPATH;*/
 }
 
 static ERL_NIF_TERM user_home_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
@@ -46,7 +45,6 @@ static ERL_NIF_TERM user_home_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM a
 
     return (dir = user_home(username)) ?
             MAKE_SUCCESS_TUPLE_STR(env, dir) : MAKE_ERROR_TUPLE(env, ATOM_BADUSER);
-            /*enif_make_string(env, dir, ERL_NIF_LATIN1) : ATOM_BADUSER;*/
 }
 
 static char *user_home(char *username)
