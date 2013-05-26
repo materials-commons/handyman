@@ -20,15 +20,23 @@
 %%% ===================================================================
 
 -module(handyuser).
--export([user_home/1, username/0]).
+-export([user_home/1, username/0, getpwent/1]).
+
+-include("handyuser.hrl").
 
 user_home(Username) -> user_home(Username, os:type()).
 
 user_home(Username, {unix, _Os}) ->
-    handyman_nifs:user_home_nif(Username);
+    case getpwent(Username) of
+    	{ok, #passwd{home_dir = HomeDir}} -> {ok, HomeDir};
+    	Error -> Error
+	end;
 user_home(_Username, {win32, _Os}) -> throw(notimplemented).
 
 username() -> username(os:type()).
 
 username({unix, _Os}) -> os:getenv("USER");
 username({win32, _Os}) -> throw(notimplemented).
+
+getpwent(Username) ->
+	handyman_nifs:getpwent_nif(Username).
