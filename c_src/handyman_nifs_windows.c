@@ -1,10 +1,18 @@
 #ifdef _WIN32
 
-#include <window.h>
+#include "erl_nif.h"
+
+#include <windows.h>
 #include <lm.h>
 #include <sddl.h>
 #include <unistd.h>
 #include <stdlib.h>
+
+static ERL_NIF_TERM ATOM_BADPATH;
+static ERL_NIF_TERM ATOM_BADUSER;
+static ERL_NIF_TERM ATOM_OK;
+static ERL_NIF_TERM ATOM_ERROR;
+static ERL_NIF_TERM ATOM_PASSWD;
 
 #define BUF_SIZE 2048
 #define STREQL(a,b) (strcmp(a,b) == 0)
@@ -13,7 +21,8 @@
 #define MAKE_ERROR_TUPLE(env, Item) enif_make_tuple2(env, ATOM_ERROR, Item)
 
 static char *realpath(const char *name, char *resolvedname);
-static LPUSER_INFO_1 find_userentry(char *username)
+static LPUSER_INFO_1 find_userentry(char *username);
+static ERL_NIF_TERM make_passwd_record(ErlNifEnv *env, LPUSER_INFO_1 pw);
 
 static ERL_NIF_TERM realpath_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
