@@ -1,4 +1,7 @@
+#if defined __MACH__ || defined __linux__
+
 #include "erl_nif.h"
+
 #include <stdlib.h>
 #include <pwd.h>
 #include <string.h>
@@ -114,3 +117,4 @@ static ErlNifFunc nif_funcs[] = {
 
 ERL_NIF_INIT(handyman_nifs, nif_funcs, &on_load, NULL, NULL, NULL);
 
+#endif
