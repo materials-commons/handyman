@@ -18,10 +18,10 @@ void free_user(struct handy_user *user);
 
 static ERL_NIF_TERM realpath_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
-    char dir[BUF_SIZE];
-    char resolvedname[BUF_SIZE];
+    char dir[MAX_PATH_SIZE];
+    char resolvedname[MAX_PATH_SIZE];
 
-    if (argc != 1 || ! enif_get_string(env, argv[0], dir, BUF_SIZE, ERL_NIF_LATIN1))
+    if (argc != 1 || ! enif_get_string(env, argv[0], dir, MAX_PATH_SIZE, ERL_NIF_LATIN1))
     {
         return enif_make_badarg(env);
     }

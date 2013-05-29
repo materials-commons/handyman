@@ -21,7 +21,7 @@
 -module(handyman_nifs).
 
 %% API
--export([realpath_nif/1, getpwent_nif/1]).
+-export([realpath_nif/1, getuser_nif/1]).
 
 %% On module load
 -on_load(init/0).
@@ -33,7 +33,7 @@
 realpath_nif(_) ->
     not_loaded(?LINE).
 
-getpwent_nif(_) ->
+getuser_nif(_) ->
 	not_loaded(?LINE).
 
 %%%===================================================================

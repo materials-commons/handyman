@@ -1,6 +1,8 @@
 
 #define MAX_PATH_SIZE 512
 
+#define STREQL(a,b) (strcmp(a,b) == 0)
+
 struct handy_user {
 	char *username;
 	char *homedir;

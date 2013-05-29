@@ -1,19 +1,19 @@
 
 #include "os_if.h"
 
-include <stdlib.h>
+#include <stdlib.h>
 #include <pwd.h>
 #include <string.h>
 #include <stdio.h>
 
 static struct passwd *find_pwentry(char *username);
 static struct passwd *getpwentry();
-static handy_user *make_handy_user(struct passwd *pw);
+static struct handy_user *make_handy_user(struct passwd *pw);
 
 struct handy_user *find_user_entry(char *username)
 {
 	struct passwd *pw = find_pwentry(username);
-	return make_handy_user(pw);
+	return pw ? make_handy_user(pw) : NULL;
 }
 
 static struct passwd *find_pwentry(char *username)
@@ -56,7 +56,7 @@ static struct passwd *getpwentry()
 #endif
 }
 
-struct handy_user *make_handy_user(struct passwd *pw)
+static struct handy_user *make_handy_user(struct passwd *pw)
 {
 	struct handy_user *user = (struct handy_user *) malloc(sizeof(struct handy_user));
 	user->username = malloc(strlen(pw->pw_name) + 1);
