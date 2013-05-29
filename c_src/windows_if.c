@@ -33,14 +33,8 @@ struct handy_user *find_user_entry(char *username)
 	LPUSER_INFO_1 lpuser;
 	struct handy_user user;
 
-	if ((lpuser = find_windws_userentry(username)))
-	{
-		return make_handy_user(lpuser);
-	}
-	else
-	{
-		return NULL;
-	}
+    return (lpuser = find_windws_userentry(username)) ?
+            make_handy_user(lpuser) : NULL;
 }
 
 static LPUSER_INFO_1 find_windows_userentry(char *username)
