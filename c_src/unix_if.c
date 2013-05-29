@@ -48,15 +48,7 @@ static struct passwd *getpwentry()
 
     char buf[BUF_SIZE];
     struct passwd pw, *pwp;
-
-    if (getpwent_r(&pw, buf, BUF_SIZE, &pwp) == 0)
-    {
-        return pwp;
-    }
-    else
-    {
-        return NULL;
-    }
+    return (getpwent_r(&pw, buf, BUF_SIZE, &pwp) == 0) ? pwp : NULL;
 #endif
 }
 
