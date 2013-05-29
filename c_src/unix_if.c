@@ -4,7 +4,6 @@
 
 #include <stdlib.h>
 #include <pwd.h>
-#include <string.h>
 #include <stdio.h>
 #include <unistd.h>
 

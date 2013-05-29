@@ -1,3 +1,4 @@
+#include <string.h>
 
 #define MAX_PATH_SIZE 512
 #define MAX_USER_NAME_SIZE 64
