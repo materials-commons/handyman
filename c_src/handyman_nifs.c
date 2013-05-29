@@ -13,7 +13,7 @@ static ERL_NIF_TERM ATOM_HANDY_USER;
 #define MAKE_ERROR_TUPLE(env, Item) enif_make_tuple2(env, ATOM_ERROR, Item)
 
 static ERL_NIF_TERM make_handy_user_record(ErlNifEnv *env, struct handy_user *user);
-void free_user(struct handy_user *user);
+void free_handy_user(struct handy_user *user);
 
 static ERL_NIF_TERM realpath_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
 {
@@ -75,11 +75,11 @@ static ERL_NIF_TERM make_handy_user_record(ErlNifEnv *env, struct handy_user *us
                 			ATOM_HANDY_USER,
                 			enif_make_string(env, user->homedir, ERL_NIF_LATIN1),
                 			enif_make_string(env, user->username, ERL_NIF_LATIN1));
-    free_user(user);
+    free_handy_user(user);
     return pwentry;
 }
 
-void free_user(struct handy_user *user)
+void free_handy_user(struct handy_user *user)
 {
 	free(user->homedir);
     free(user->username);
