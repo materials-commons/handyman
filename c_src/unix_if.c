@@ -1,3 +1,4 @@
+#if defined __MACH__ || defined __linux__
 
 #include "os_if.h"
 
@@ -65,3 +66,5 @@ static struct handy_user *make_handy_user(struct passwd *pw)
 	strcpy(user->homedir, pw->pw_dir);
 	return user;
 }
+
+#endif

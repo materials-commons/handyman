@@ -8,8 +8,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-static LPUSER_INFO_1 find_windows_userentry(char *username);
-static handy_user *make_handy_user(LPUSER_INFO_1 lpuser);
+static LPUSER_INFO_1 find_windows_user_entry(char *username);
+static struct handy_user *make_handy_user(LPUSER_INFO_1 lpuser);
 
 char *realpath(const char *name, char *resolvedname)
 {
@@ -23,7 +23,7 @@ char *realpath(const char *name, char *resolvedname)
     }
     else
     {
-        resolvedname = _fullpath(resolvedname, name, BUF_SIZE);
+        resolvedname = _fullpath(resolvedname, name, MAX_PATH_SIZE);
         return resolvedname;
     }
 }
@@ -31,17 +31,18 @@ char *realpath(const char *name, char *resolvedname)
 struct handy_user *find_user_entry(char *username)
 {
 	LPUSER_INFO_1 lpuser;
-	struct handy_user user;
 
-    return (lpuser = find_windws_userentry(username)) ?
+    return (lpuser = find_windows_user_entry(username)) ?
             make_handy_user(lpuser) : NULL;
 }
 
-static LPUSER_INFO_1 find_windows_userentry(char *username)
+static LPUSER_INFO_1 find_windows_user_entry(char *username)
 {
 	LPUSER_INFO_1 buf;
+    wchar_t username_wide[32];
+    mbstowcs(username_wide, username, 32);
 
-    if (NetUserGetInfo(NULL, username, (DWORD) 1, (LPBYTE *) &buf) == NERR_Success)
+    if (NetUserGetInfo(NULL, username_wide, (DWORD) 1, (LPBYTE *) &buf) == NERR_Success)
     {
         return buf;
     }
@@ -51,13 +52,17 @@ static LPUSER_INFO_1 find_windows_userentry(char *username)
     }
 }
 
-static handy_user *make_handy_user(LPUSER_INFO_1 lpuser)
+static struct handy_user *make_handy_user(LPUSER_INFO_1 lpuser)
 {
+    char buf[512];
+    wcstombs(buf, lpuser->usri1_name, 512);
 	struct handy_user *user = (struct handy_user *) malloc(sizeof(struct handy_user));
-	user->username = malloc(strlen(lpuser->usri1_name) + 1);
-	strcpy(user->username, lpuser->user1_name);
-	user->homedir = malloc(strlen(lpuser->usri1_home_dir) + 1);
-	strcpy(user->homedir, lpuser->usri1_home_dir);
+	user->username = malloc(strlen(buf) + 1);
+	strcpy(user->username, buf);
+
+    wcstombs(buf, lpuser->usri1_home_dir, 512);
+	user->homedir = malloc(strlen(buf) + 1);
+	strcpy(user->homedir, buf);
 	return user;
 }
 

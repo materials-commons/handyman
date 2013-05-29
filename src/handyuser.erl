@@ -24,19 +24,17 @@
 
 -include("handyuser.hrl").
 
-user_home(Username) -> user_home(Username, os:type()).
-
-user_home(Username, {unix, _Os}) ->
+user_home(Username) ->
     case getuser(Username) of
     	{ok, #handy_user{home_dir = HomeDir}} -> {ok, HomeDir};
     	Error -> Error
-	end;
-user_home(_Username, {win32, _Os}) -> throw(notimplemented).
+	end.
 
 username() -> username(os:type()).
 
+%% These calls should not use an environment variable.
 username({unix, _Os}) -> os:getenv("USER");
-username({win32, _Os}) -> throw(notimplemented).
+username({win32, _Os}) -> os:getenv("USERNAME").
 
 getuser(Username) ->
 	handyman_nifs:getuser_nif(Username).
