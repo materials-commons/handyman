@@ -43,6 +43,9 @@ static struct passwd *getpwentry()
 #ifdef __MACH__
     return getpwent();
 #elif __linux__
+
+#define BUF_SIZE 2048
+
     char buf[BUF_SIZE];
     struct passwd pw, *pwp;
 
