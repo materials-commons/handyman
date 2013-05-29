@@ -1,2 +1,2 @@
 
--record(passwd, {username, home_dir}).
+-record(handy_user, {username, home_dir}).

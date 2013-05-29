@@ -28,7 +28,7 @@ user_home(Username) -> user_home(Username, os:type()).
 
 user_home(Username, {unix, _Os}) ->
     case getuser(Username) of
-    	{ok, #passwd{home_dir = HomeDir}} -> {ok, HomeDir};
+    	{ok, #handy_user{home_dir = HomeDir}} -> {ok, HomeDir};
     	Error -> Error
 	end;
 user_home(_Username, {win32, _Os}) -> throw(notimplemented).
