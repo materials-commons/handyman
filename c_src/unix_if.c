@@ -80,4 +80,9 @@ char *username()
 #endif
 }
 
+char *tmpdir()
+{
+    return "/tmp";
+}
+
 #endif

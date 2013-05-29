@@ -21,7 +21,7 @@
 -module(handyman_nifs).
 
 %% API
--export([realpath_nif/1, getuser_nif/1, username_nif/0]).
+-export([realpath_nif/1, getuser_nif/1, username_nif/0, tmpdir_nif/0]).
 
 %% On module load
 -on_load(init/0).
@@ -37,6 +37,9 @@ getuser_nif(_) ->
 	not_loaded(?LINE).
 
 username_nif() ->
+    not_loaded(?LINE).
+
+tmpdir_nif() ->
     not_loaded(?LINE).
 
 %%%===================================================================

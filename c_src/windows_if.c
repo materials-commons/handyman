@@ -77,4 +77,14 @@ char *username()
     return (GetUserName(usernamebuf, &size) != 0) ? usernamebuf : NULL;
 }
 
+char *tmpdir()
+{
+    char tmpdirbuf[MAX_PATH_SIZE];
+
+    /*
+    ** GetTempPath returns 0 on failure
+    */
+    return (GetTempPath(MAX_PATH_SIZE, tmpdirbuf) != 0) ? tmpdirbuf : NULL;
+}
+
 #endif

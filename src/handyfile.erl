@@ -20,7 +20,7 @@
 %%% ===================================================================
 
 -module(handyfile).
--export([file_exists/1, is_symlink/1, realpath/1]).
+-export([file_exists/1, is_symlink/1, realpath/1, tmpdir/0]).
 
 -include_lib("kernel/include/file.hrl").
 
@@ -40,7 +40,9 @@ is_symlink(FilePath) ->
         _ -> false
     end.
 
--spec realpath(string()) -> string() | badpath.
+-spec realpath(string()) -> {ok, string()} | {error, badpath}.
 realpath(FilePath) ->
     handyman_nifs:realpath_nif(FilePath).
 
+-spec tmpdir() -> {ok, string()} | {error, badpath}.
+tmpdir() -> handyman_nifs:tmpdir_nif().
