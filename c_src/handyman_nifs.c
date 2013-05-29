@@ -43,6 +43,19 @@ static ERL_NIF_TERM getuser_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM arg
             MAKE_ERROR_TUPLE(env, ATOM_BADUSER);
 }
 
+static ERL_NIF_TERM username_nif(ErlNifEnv *env, int argc, const ERL_NIF_TERM argv[])
+{
+    char *usernamebuf;
+
+    if (argc != 0)
+    {
+        return enif_make_badarg(env);
+    }
+
+    return (usernamebuf = username()) ?
+            MAKE_SUCCESS_TUPLE_STR(env, usernamebuf) : MAKE_ERROR_TUPLE(env, ATOM_BADUSER);
+}
+
 static ERL_NIF_TERM make_handy_user_record(ErlNifEnv *env, struct handy_user *user)
 {
     ERL_NIF_TERM pwentry = enif_make_tuple3(env,
@@ -72,7 +85,8 @@ static int on_load(ErlNifEnv *env, void **priv, ERL_NIF_TERM load_info)
 
 static ErlNifFunc nif_funcs[] = {
     {"realpath_nif", 1, realpath_nif},
-    {"getuser_nif", 1, getuser_nif}
+    {"getuser_nif", 1, getuser_nif},
+    {"username_nif", 0, username_nif}
 };
 
 ERL_NIF_INIT(handyman_nifs, nif_funcs, &on_load, NULL, NULL, NULL);

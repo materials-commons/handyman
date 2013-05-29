@@ -30,11 +30,7 @@ user_home(Username) ->
     	Error -> Error
 	end.
 
-username() -> username(os:type()).
-
-%% These calls should not use an environment variable.
-username({unix, _Os}) -> os:getenv("USER");
-username({win32, _Os}) -> os:getenv("USERNAME").
+username() -> handyman_nifs:username_nif().
 
 getuser(Username) ->
 	handyman_nifs:getuser_nif(Username).

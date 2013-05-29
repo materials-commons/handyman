@@ -66,4 +66,15 @@ static struct handy_user *make_handy_user(LPUSER_INFO_1 lpuser)
 	return user;
 }
 
+char *username()
+{
+    char usernamebuf[MAX_USER_NAME_SIZE];
+    DWORD size = MAX_USER_NAME_SIZE;
+
+    /*
+    ** Unlike Unix If GetUserName() returns 0 then it failed
+    */
+    return (GetUserName(usernamebuf, &size) != 0) ? usernamebuf : NULL;
+}
+
 #endif

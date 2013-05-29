@@ -6,6 +6,7 @@
 #include <pwd.h>
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 
 static struct passwd *find_pwentry(char *username);
 static struct passwd *getpwentry();
@@ -68,6 +69,16 @@ static struct handy_user *make_handy_user(struct passwd *pw)
 	user->homedir = malloc(strlen(pw->pw_dir) + 1);
 	strcpy(user->homedir, pw->pw_dir);
 	return user;
+}
+
+char *username()
+{
+#ifdef __MACH__
+    return getlogin();
+#elif __linux__
+    char usernamebuf[MAX_USER_NAME_SIZE];
+    return (getlogin_r(usernamebuf, MAX_USER_NAME_SIZE) == 0) ? usernamebuf : NULL;
+#endif
 }
 
 #endif
